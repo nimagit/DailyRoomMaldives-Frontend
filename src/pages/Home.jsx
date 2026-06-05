@@ -108,8 +108,14 @@ export default function Home() {
 
       const { data: res } = await api.get(`/listings?${params}`);
       setData((prev) => ({
-        ...res,
-        regularListings: append ? [...prev.regularListings, ...res.regularListings] : res.regularListings,
+        premiumListings: res.premiumListings || [],
+        urgentListings:  res.urgentListings  || [],
+        regularListings: append
+          ? [...prev.regularListings, ...(res.regularListings || [])]
+          : (res.regularListings || []),
+        total:       res.total       || 0,
+        pages:       res.pages       || 0,
+        currentPage: res.currentPage || 1,
       }));
     } catch {
       setError('Failed to load listings. Please try again.');
@@ -274,7 +280,7 @@ export default function Home() {
               ) : (
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                    {data.regularListings.map((listing, i) => (
+                    {(data.regularListings || []).map((listing, i) => (
                       <ListingCard key={listing._id} listing={listing} index={i} />
                     ))}
                   </div>
